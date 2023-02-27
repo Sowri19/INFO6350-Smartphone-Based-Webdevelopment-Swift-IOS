@@ -5,8 +5,7 @@ import UIKit
 //korturti.s@notheastern.edu
 //Swift Functions
 
-//Write a Swift function that computes the area of a rectangle while passing the length
-//and breadth
+//Write a Swift function that computes the area of a rectangle while passing the length and breadth
 
 func rectangleArea(length: Double, breadth: Double) -> Double {
     return length * breadth
@@ -43,6 +42,7 @@ print(isPalindromeResult)
 //Swift Structures
 //Create a structure ‘Student with four properties: Name(String),Age(Int), ID(Int),
 //isGraduated (Bool)
+
 struct Student {
     var name: String
     var age: Int
