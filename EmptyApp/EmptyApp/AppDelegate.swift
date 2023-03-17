@@ -1378,7 +1378,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UITextFieldDelegate {
         // add submit button
         let submitButton = UIButton(type: .system)
         submitButton.frame = CGRect(x: 20, y: 150, width: UIScreen.main.bounds.width - 40, height: 30)
-        submitButton.setTitle("Search Product", for: .normal)
+        submitButton.setTitle("Delete Product", for: .normal)
         submitButton.setTitleColor(.black, for: .normal)
         submitButton.addTarget(self, action: #selector(DeleteProductPost), for: .touchUpInside)
         submitButton.backgroundColor = UIColor.green
@@ -1412,7 +1412,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UITextFieldDelegate {
                     productManager.deleteProductPost(productPost: productPostToDelete)
                     print("Product post deleted successfully!")
                     // Handle case where product post id is deleted
-                    let alert = UIAlertController(title: "Success", message: "Product Post deleted succesfully", preferredStyle: .alert)
+                    let alert = UIAlertController(title: "Success", message: "Product Post deleted successfully", preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                     if let rootViewController = window?.rootViewController {
                         rootViewController.present(alert, animated: true, completion: nil)
