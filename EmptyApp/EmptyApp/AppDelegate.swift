@@ -1378,7 +1378,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UITextFieldDelegate {
         // add submit button
         let submitButton = UIButton(type: .system)
         submitButton.frame = CGRect(x: 20, y: 150, width: UIScreen.main.bounds.width - 40, height: 30)
-        submitButton.setTitle("Delete Product", for: .normal)
+        submitButton.setTitle("Delete Product Post", for: .normal)
         submitButton.setTitleColor(.black, for: .normal)
         submitButton.addTarget(self, action: #selector(DeleteProductPost), for: .touchUpInside)
         submitButton.backgroundColor = UIColor.green
