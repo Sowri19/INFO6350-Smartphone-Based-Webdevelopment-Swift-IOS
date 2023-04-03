@@ -49,73 +49,153 @@ class SearchViewController: UIViewController {
     
     @IBAction func searchCompany(_ sender: UIButton) {
         print("submitCompanySearch button pressed")
-        if let id = Int(SearchidField.text ?? "") {
+            guard let idText = SearchidField.text, !idText.isEmpty else {
+                // show alert for empty field
+                let alert = UIAlertController(title: "Missing Information", message: "Please enter an ID.", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                present(alert, animated: true, completion: nil)
+                return
+            }
+            guard let id = Int(idText) else {
+                // show alert for invalid input
+                let alert = UIAlertController(title: "Invalid Input", message: "Please enter a valid integer ID.", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                present(alert, animated: true, completion: nil)
+                return
+            }
             let vc = SearchViewController(nibName: "DisplaySearchedCompanyView", bundle: nil)
             self.present(vc, animated: true, completion: nil)
             if let textView = vc.textView {
                 displayCompanyDetails(id: id, textView: textView)
             }
-        }
     }
 
     @IBAction func searchProduct(_ sender: UIButton) {
         print("submitProductSearch button pressed")
-        if let id = Int(SearchidField.text ?? "") {
+            guard let idString = SearchidField.text, !idString.isEmpty else {
+                // Alert the user that the ID field is empty
+                let alert = UIAlertController(title: "Missing Information", message: "Please enter a product ID", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                present(alert, animated: true, completion: nil)
+                return
+            }
+            guard let id = Int(idString) else {
+                // Alert the user that the ID field contains invalid input
+                let alert = UIAlertController(title: "Error", message: "Please enter a valid product ID", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                present(alert, animated: true, completion: nil)
+                return
+            }
             let vc = SearchViewController(nibName: "DisplaySearchedProductView", bundle: nil)
             self.present(vc, animated: true, completion: nil)
             if let textView = vc.textView {
                 displayProductDetails(id: id, textView: textView)
             }
-        }
     }
 
     @IBAction func searchProductPost(_ sender: UIButton) {
         print("submitProductPostSearch button pressed")
-        if let id = Int(SearchidField.text ?? "") {
-            let vc = SearchViewController(nibName: "DisplaySearchedProductPostView", bundle: nil)
-            self.present(vc, animated: true, completion: nil)
-            if let textView = vc.textView {
-                displayProductPostDetails(id: id, textView: textView)
-            }
-        }
+           guard let idText = SearchidField.text, !idText.isEmpty else {
+               // show alert for empty field
+               let alert = UIAlertController(title: "Missing Information", message: "Please enter an ID.", preferredStyle: .alert)
+               alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+               present(alert, animated: true, completion: nil)
+               return
+           }
+           guard let id = Int(idText) else {
+               // show alert for invalid data type
+               let alert = UIAlertController(title: "Invalid Input", message: "Please enter a valid integer for ID.", preferredStyle: .alert)
+               alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+               present(alert, animated: true, completion: nil)
+               return
+           }
+           let vc = SearchViewController(nibName: "DisplaySearchedProductPostView", bundle: nil)
+           self.present(vc, animated: true, completion: nil)
+           if let textView = vc.textView {
+               displayProductPostDetails(id: id, textView: textView)
+           }
     }
 
     @IBAction func searchRatings(_ sender: UIButton) {
-       
         print("submitRatingSearch button pressed")
-           if let rating = Double(RatingsField.text ?? "") {
-               let vc = SearchViewController(nibName: "DisplaySearchedRatingsView", bundle: nil)
-               self.present(vc, animated: true, completion: nil)
-               if let textView = vc.textView {
-                   displayRatingsDetails(rating: rating, textView: textView)
-               }
+           guard let ratingText = RatingsField.text, !ratingText.isEmpty else {
+               // show alert for empty field
+               let alert = UIAlertController(title: "Missing Information", message: "Please enter a rating.", preferredStyle: .alert)
+               alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+               present(alert, animated: true, completion: nil)
+               return
+           }
+           
+           guard let rating = Double(ratingText) else {
+               // show alert for invalid input
+               let alert = UIAlertController(title: "Invalid Input", message: "Please enter a valid rating.", preferredStyle: .alert)
+               alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+               present(alert, animated: true, completion: nil)
+               return
+           }
+           
+           let vc = SearchViewController(nibName: "DisplaySearchedRatingsView", bundle: nil)
+           self.present(vc, animated: true, completion: nil)
+           
+           if let textView = vc.textView {
+               displayRatingsDetails(rating: rating, textView: textView)
            }
     }
 
     @IBAction func searchProductType(_ sender: UIButton) {
-        print("submitProductTypeSearch button pressed")
-        if let id = Int(SearchidField.text ?? "") {
-            let vc = SearchViewController(nibName: "DisplaySearchedProductTypeView", bundle: nil)
-            self.present(vc, animated: true, completion: nil)
-            if let textView = vc.textView {
-                displayProductTypeDetails(id: id, textView: textView)
-            }
-        }
+    print("submitProductTypeSearch button pressed")
+       guard let idText = SearchidField.text, !idText.isEmpty else {
+           // show alert for empty field
+           let alert = UIAlertController(title: "Missing Information", message: "Please enter an ID.", preferredStyle: .alert)
+           alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+           present(alert, animated: true, completion: nil)
+           return
+       }
+       guard let id = Int(idText) else {
+           // show alert for invalid input
+           let alert = UIAlertController(title: "Invalid Input", message: "Please enter a valid integer for ID.", preferredStyle: .alert)
+           alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+           present(alert, animated: true, completion: nil)
+           return
+       }
+       let vc = SearchViewController(nibName: "DisplaySearchedProductTypeView", bundle: nil)
+       self.present(vc, animated: true, completion: nil)
+       if let textView = vc.textView {
+           displayProductTypeDetails(id: id, textView: textView)
+       }
     }
     
     func displayProductTypeDetails(id: Int, textView: UITextView) {
         let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
            let fetchRequest: NSFetchRequest<Producttype> = Producttype.fetchRequest()
            fetchRequest.predicate = NSPredicate(format: "id == %d", id)
-           
            do {
-               let productTypes = try context.fetch(fetchRequest)
-               if let productType = productTypes.first {
-                   let productTypeString = "ID: \(productType.id)\nProduct Type: \(productType.product_type ?? "")\n"
-                   textView.text = productTypeString
-               } else {
-                   textView.text = "Product type with ID \(id) not found"
-               }
+               let fetchRequest: NSFetchRequest<ProductPostData> = ProductPostData.fetchRequest()
+               fetchRequest.predicate = NSPredicate(format: "product_type_id == %d", id)
+               let results = try context.fetch(fetchRequest)
+               let dateFormatter = DateFormatter()
+               dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+               var postString = ""
+               for post in results {
+                   postString += "Post ID: \(post.id)\n"
+                   postString += "Product Type ID: \(post.product_type_id)\n"
+                      postString += "Company ID: \(post.company_id)\n"
+                      postString += "Product ID: \(post.product_id)\n"
+                       if let postedDate = post.posted_date {
+                              postString += "Posted Date: \(dateFormatter.string(from: postedDate))\n"
+                          }
+                      postString += "Price: \(post.price)\n"
+                   if let description = post.description_ {
+                           postString += "Description: \(description)\n\n"
+                       } else {
+                           postString += "Description: N/A\n\n"
+                       }
+                  }
+               if postString.isEmpty {
+                           textView.text = "No product posts found for product type ID \(id)"
+                       } else {
+                           textView.text = postString
+                       }
            } catch {
                textView.text = "Error retrieving product type with ID \(id): \(error.localizedDescription)"
            }
@@ -127,13 +207,32 @@ class SearchViewController: UIViewController {
             let fetchRequest: NSFetchRequest<CompanyData> = CompanyData.fetchRequest()
             fetchRequest.predicate = NSPredicate(format: "id == %d", id)
             do {
+                let fetchRequest: NSFetchRequest<ProductPostData> = ProductPostData.fetchRequest()
+                fetchRequest.predicate = NSPredicate(format: "company_id == %d", id)
                 let results = try context.fetch(fetchRequest)
-                if let company = results.first {
-                    let companyString = "ID: \(String(company.id))\nname: \(company.name ?? "")\naddress: \(company.address ?? "")\ncountry: \(company.country ?? "")\nzip: \(String(company.zip ))\ncompany_type: \(company.company_type ?? "")"
-                    textView.text = companyString
-                } else {
-                    textView.text = "Company with ID \(id) not found"
-                }
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+                var postString = ""
+                for post in results {
+                    postString += "Post ID: \(post.id)\n"
+                    postString += "Product Type ID: \(post.product_type_id)\n"
+                       postString += "Company ID: \(post.company_id)\n"
+                       postString += "Product ID: \(post.product_id)\n"
+                        if let postedDate = post.posted_date {
+                               postString += "Posted Date: \(dateFormatter.string(from: postedDate))\n"
+                           }
+                       postString += "Price: \(post.price)\n"
+                    if let description = post.description_ {
+                            postString += "Description: \(description)\n\n"
+                        } else {
+                            postString += "Description: N/A\n\n"
+                        }
+                   }
+                if postString.isEmpty {
+                            textView.text = "No product posts found for product type ID \(id)"
+                        } else {
+                            textView.text = postString
+                        }
             } catch {
                 // handle error
                 print("Error fetching company: \(error)")
@@ -148,13 +247,32 @@ class SearchViewController: UIViewController {
            let fetchRequest: NSFetchRequest<ProductData> = ProductData.fetchRequest()
            fetchRequest.predicate = NSPredicate(format: "id == %d", id)
            do {
+               let fetchRequest: NSFetchRequest<ProductPostData> = ProductPostData.fetchRequest()
+               fetchRequest.predicate = NSPredicate(format: "product_id == %d", id)
                let results = try context.fetch(fetchRequest)
-               if let product = results.first {
-                   let productString = "ID: \(product.id)\nname: \(product.name ?? "")\nproduct_description: \(product.product_description ?? "")\nproduct_rating: \(product.product_rating)\ncompany_id: \(product.company_id)\nquantity: \(product.quantity)"
-                   textView.text = productString
-               } else {
-                   textView.text = "Product with ID \(id) not found"
-               }
+               let dateFormatter = DateFormatter()
+               dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+               var postString = ""
+               for post in results {
+                   postString += "Post ID: \(post.id)\n"
+                   postString += "Product Type ID: \(post.product_type_id)\n"
+                      postString += "Company ID: \(post.company_id)\n"
+                      postString += "Product ID: \(post.product_id)\n"
+                       if let postedDate = post.posted_date {
+                              postString += "Posted Date: \(dateFormatter.string(from: postedDate))\n"
+                          }
+                      postString += "Price: \(post.price)\n"
+                   if let description = post.description_ {
+                           postString += "Description: \(description)\n\n"
+                       } else {
+                           postString += "Description: N/A\n\n"
+                       }
+                  }
+               if postString.isEmpty {
+                           textView.text = "No product posts found for product type ID \(id)"
+                       } else {
+                           textView.text = postString
+                       }
            } catch {
                // handle error
                print("Error fetching product: \(error)")
@@ -185,26 +303,30 @@ class SearchViewController: UIViewController {
             }
     }
     
-    func displayRatingsDetails(rating: Double, textView: UITextView) {
+    func displayRatingsDetails(rating: Double, textView: UITextView){
         let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-           let fetchRequest: NSFetchRequest<ProductData> = ProductData.fetchRequest()
-           let ratingTolerance = 0.01 // the range of tolerance around the target rating
-           fetchRequest.predicate = NSPredicate(format: "product_rating >= %f AND product_rating <= %f", rating - ratingTolerance, rating + ratingTolerance)
-           do {
-               let results = try context.fetch(fetchRequest)
-               if let product = results.first {
-                   let productString = "ID: \(product.id)\nname: \(product.name ?? "")\nproduct_description: \(product.product_description ?? "")\nproduct_rating: \(product.product_rating)\ncompany_id: \(product.company_id)\nquantity: \(product.quantity)"
-                   textView.text = productString
-               } else {
-                   textView.text = "Product type with rating \(rating) not found"
-               }
-           } catch {
-               // handle error
-               print("Error fetching products: \(error)")
-               let alert = UIAlertController(title: "Error", message: "Unable to fetch product details.", preferredStyle: .alert)
-               alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-               present(alert, animated: true, completion: nil)
-           }
+            let fetchRequest: NSFetchRequest<ProductData> = ProductData.fetchRequest()
+            let ratingTolerance = 0.01 // the range of tolerance around the target rating
+            fetchRequest.predicate = NSPredicate(format: "product_rating >= %f AND product_rating <= %f", rating - ratingTolerance, rating + ratingTolerance)
+            do {
+                let results = try context.fetch(fetchRequest)
+                let matchingIds = results.map { $0.id }
+                let postFetchRequest: NSFetchRequest<ProductPostData> = ProductPostData.fetchRequest()
+                postFetchRequest.predicate = NSPredicate(format: "product_id IN %@", matchingIds)
+                let postResults = try context.fetch(postFetchRequest)
+                if postResults.isEmpty {
+                    textView.text = "No product posts found for products with rating \(rating)"
+                } else {
+                    let postString = postResults.map { "ID: \($0.id)\nproduct_id: \($0.product_id)\ncompany_id: \($0.company_id)\nProduct Type ID: \($0.product_type_id)\nPosted Date: \($0.posted_date ?? Date())\nDescription: \($0.description_ ?? "")\n\n" }.joined()
+                    textView.text = postString
+                }
+            } catch {
+                // handle error
+                print("Error fetching products: \(error)")
+                let alert = UIAlertController(title: "Error", message: "Unable to fetch product details.", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                present(alert, animated: true, completion: nil)
+            }
     }
     
     /*

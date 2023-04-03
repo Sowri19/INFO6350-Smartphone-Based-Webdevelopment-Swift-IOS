@@ -126,30 +126,69 @@ class ManageCompaniesViewController: UIViewController {
                present(alert, animated: true, completion: nil)
                return
            }
-           
-           let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-           let fetchRequest: NSFetchRequest<CompanyData> = CompanyData.fetchRequest()
-           fetchRequest.predicate = NSPredicate(format: "id == %d", companyId)
-           
-           do {
-               let result = try context.fetch(fetchRequest)
-               if let companyToDelete = result.first {
-                   context.delete(companyToDelete)
-                   try context.save()
-                   
-                   let alert = UIAlertController(title: "Company Deleted Successfully", message: "Press OK to continue", preferredStyle: .alert)
-                   alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                   present(alert, animated: true, completion: nil)
-               } else {
-                   let alert = UIAlertController(title: "Error", message: "Company ID does not exist to delete.", preferredStyle: .alert)
-                   alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                   present(alert, animated: true, completion: nil)
-               }
-           } catch {
-               let alert = UIAlertController(title: "Error", message: "Failed to delete company", preferredStyle: .alert)
+
+        let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+            
+        // Check if any product posts are associated with this company
+        let productPostFetchRequest: NSFetchRequest<ProductPostData> = ProductPostData.fetchRequest()
+        productPostFetchRequest.predicate = NSPredicate(format: "company_id == %ld", companyId)
+        do {
+            let productPosts = try context.fetch(productPostFetchRequest)
+            if !productPosts.isEmpty {
+                let alert = UIAlertController(title: "Error", message: "There are product posts associated with this company id. Please disassociate or delete them before deleting the product type.", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                present(alert, animated: true, completion: nil)
+                return
+            }
+        } catch let error {
+            // Handle any errors that occur during fetch
+            let alert = UIAlertController(title: "Error", message: "Failed to fetch product posts associated with company with error: \(error.localizedDescription)", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            present(alert, animated: true, completion: nil)
+            return
+        }
+        // Check if any products are associated with this product type
+        let productFetchRequest: NSFetchRequest<ProductData> = ProductData.fetchRequest()
+        productFetchRequest.predicate = NSPredicate(format: "company_id == %ld", companyId)
+        
+        do {
+            let products = try context.fetch(productFetchRequest)
+            if !products.isEmpty {
+                let alert = UIAlertController(title: "Error", message: "There are products associated with this company id. Please disassociate or delete them before deleting the product type.", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                present(alert, animated: true, completion: nil)
+                return
+            }
+        } catch let error {
+            // Handle any errors that occur during fetch
+            let alert = UIAlertController(title: "Error", message: "Failed to fetch products associated with company with error: \(error.localizedDescription)", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            present(alert, animated: true, completion: nil)
+            return
+        }
+        
+    // Now delete the company
+       let fetchRequest: NSFetchRequest<CompanyData> = CompanyData.fetchRequest()
+       fetchRequest.predicate = NSPredicate(format: "id == %d", companyId)
+       do {
+           let result = try context.fetch(fetchRequest)
+           if let companyToDelete = result.first {
+               context.delete(companyToDelete)
+               try context.save()
+
+               let alert = UIAlertController(title: "Company Deleted Successfully", message: "Press OK to continue", preferredStyle: .alert)
+               alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+               present(alert, animated: true, completion: nil)
+           } else {
+               let alert = UIAlertController(title: "Error", message: "Company ID does not exist to delete.", preferredStyle: .alert)
                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                present(alert, animated: true, completion: nil)
            }
+       } catch {
+           let alert = UIAlertController(title: "Error", message: "Failed to delete company", preferredStyle: .alert)
+           alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+           present(alert, animated: true, completion: nil)
+       }
     }
     
     @IBAction func UpdateCompany(_ sender: UIButton) {

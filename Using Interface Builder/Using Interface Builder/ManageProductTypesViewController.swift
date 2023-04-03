@@ -98,47 +98,148 @@ class ManageProductTypesViewController: UIViewController {
     }
     
     @IBAction func DeleteProductType(_ sender: UIButton) {
+//        print("Delete Product Type button pressed")
+//            guard let idText = ProductTypeIdField?.text,
+//                  let productTypeId = Int(idText) else {
+//                // Handle case where idField has no text or the text is not a valid integer
+//                let alert = UIAlertController(title: "Error", message: "Please enter a valid Product Type ID", preferredStyle: .alert)
+//                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+//                present(alert, animated: true, completion: nil)
+//                return
+//            }
+//
+//            let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+//            let fetchRequest: NSFetchRequest<Producttype> = Producttype.fetchRequest()
+//            fetchRequest.predicate = NSPredicate(format: "id == %ld", productTypeId)
+//
+//            do {
+//                let productTypes = try context.fetch(fetchRequest)
+//                guard let productType = productTypes.first else {
+//                    // Deletion failed - no product type found with given id
+//                    let alert = UIAlertController(title: "Error", message: "Product Type ID does not exist to delete.", preferredStyle: .alert)
+//                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+//                    present(alert, animated: true, completion: nil)
+//                    return
+//                }
+//
+//                // Delete the product type from Core Data
+//                context.delete(productType)
+//                try context.save()
+//
+//                // Deletion was successful
+//                let alert = UIAlertController(title: "Product Type Deleted Successfully", message: "Press OK to continue", preferredStyle: .alert)
+//                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+//                present(alert, animated: true, completion: nil)
+//
+//            } catch let error {
+//                // Handle any errors that occur during fetch or delete
+//                let alert = UIAlertController(title: "Error", message: "Failed to delete product type with error: \(error.localizedDescription)", preferredStyle: .alert)
+//                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+//                present(alert, animated: true, completion: nil)
+//            }
         print("Delete Product Type button pressed")
-            guard let idText = ProductTypeIdField?.text,
-                  let productTypeId = Int(idText) else {
-                // Handle case where idField has no text or the text is not a valid integer
-                let alert = UIAlertController(title: "Error", message: "Please enter a valid Product Type ID", preferredStyle: .alert)
+        
+        guard let idText = ProductTypeIdField?.text,
+              let productTypeId = Int(idText) else {
+            // Handle case where idField has no text or the text is not a valid integer
+            let alert = UIAlertController(title: "Error", message: "Please enter a valid Product Type ID", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            present(alert, animated: true, completion: nil)
+            return
+        }
+        
+        let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+                
+        // checking with the orders
+        let orderprodtypefetchRequest: NSFetchRequest<Producttype> = Producttype.fetchRequest()
+        orderprodtypefetchRequest.predicate = NSPredicate(format: "id == %ld", productTypeId)
+        do {
+            let result = try context.fetch(orderprodtypefetchRequest)
+            guard let productType = result.first else {
+                // Handle case where no product type found with the given id
+                let alert = UIAlertController(title: "Error", message: "Product Type ID does not exist.", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                present(alert, animated: true, completion: nil)
+                return
+            }
+            if let productTypeParameter = productType.product_type {
+                // Check if any orders are associated with this product type
+                let orderFetchRequest: NSFetchRequest<OrdersData> = OrdersData.fetchRequest()
+                orderFetchRequest.predicate = NSPredicate(format: "product_type == %@", productTypeParameter)
+                
+                do {
+                    let orders = try context.fetch(orderFetchRequest)
+                    if !orders.isEmpty {
+                        let alert = UIAlertController(title: "Error", message: "There are orders associated with this product type. Please disassociate or delete them before deleting the product type.", preferredStyle: .alert)
+                        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                        present(alert, animated: true, completion: nil)
+                        return
+                    }
+                }
+                catch let error {
+                    // Handle any errors that occur during fetch
+                    let alert = UIAlertController(title: "Error", message: "Failed to fetch product posts associated with product type with error: \(error.localizedDescription)", preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                    present(alert, animated: true, completion: nil)
+                    return
+                }
+            }
+        } catch let error {
+            // Handle any errors that occur during fetch
+            let alert = UIAlertController(title: "Error", message: "Failed to fetch product type with error: \(error.localizedDescription)", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            present(alert, animated: true, completion: nil)
+        }
+        
+        // Check if any product posts are associated with this product type
+        let productPostFetchRequest: NSFetchRequest<ProductPostData> = ProductPostData.fetchRequest()
+        productPostFetchRequest.predicate = NSPredicate(format: "product_type_id == %ld", productTypeId)
+        do {
+            let productPosts = try context.fetch(productPostFetchRequest)
+            if !productPosts.isEmpty {
+                let alert = UIAlertController(title: "Error", message: "There are product posts associated with this product type. Please disassociate or delete them before deleting the product type.", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                present(alert, animated: true, completion: nil)
+                return
+            }
+        } catch let error {
+            // Handle any errors that occur during fetch
+            let alert = UIAlertController(title: "Error", message: "Failed to fetch product posts associated with product type with error: \(error.localizedDescription)", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            present(alert, animated: true, completion: nil)
+            return
+        }
+
+        // Now delete the producttype
+        let fetchRequest: NSFetchRequest<Producttype> = Producttype.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %ld", productTypeId)
+        do {
+            let productTypes = try context.fetch(fetchRequest)
+            guard let productType = productTypes.first else {
+                // Deletion failed - no product type found with given id
+                let alert = UIAlertController(title: "Error", message: "Product Type ID does not exist to delete.", preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                 present(alert, animated: true, completion: nil)
                 return
             }
 
-            let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-            let fetchRequest: NSFetchRequest<Producttype> = Producttype.fetchRequest()
-            fetchRequest.predicate = NSPredicate(format: "id == %ld", productTypeId)
+            // Delete the product type from Core Data
+            context.delete(productType)
+            try context.save()
 
-            do {
-                let productTypes = try context.fetch(fetchRequest)
-                guard let productType = productTypes.first else {
-                    // Deletion failed - no product type found with given id
-                    let alert = UIAlertController(title: "Error", message: "Product Type ID does not exist to delete.", preferredStyle: .alert)
-                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                    present(alert, animated: true, completion: nil)
-                    return
-                }
-                
-                // Delete the product type from Core Data
-                context.delete(productType)
-                try context.save()
+            // Deletion was successful
+            let alert = UIAlertController(title: "Product Type Deleted Successfully", message: "Press OK to continue", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            present(alert, animated: true, completion: nil)
 
-                // Deletion was successful
-                let alert = UIAlertController(title: "Product Type Deleted Successfully", message: "Press OK to continue", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                present(alert, animated: true, completion: nil)
-
-            } catch let error {
-                // Handle any errors that occur during fetch or delete
-                let alert = UIAlertController(title: "Error", message: "Failed to delete product type with error: \(error.localizedDescription)", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                present(alert, animated: true, completion: nil)
-            }
+        } catch let error {
+            // Handle any errors that occur during fetch or delete
+            let alert = UIAlertController(title: "Error", message: "Failed to delete product type with error: \(error.localizedDescription)", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            present(alert, animated: true, completion: nil)
+        }
     }
-    
+        
     @IBAction func UpdateProductType(_ sender: UIButton) {
         guard let idText = ProductTypeIdField?.text, let productTypeId = Int(idText),
                 let nameText = ProductTypeField?.text, !nameText.isEmpty else {

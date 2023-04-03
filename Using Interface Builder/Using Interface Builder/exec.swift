@@ -53,18 +53,18 @@ class ProductManager {
             companies.append(company)
         }
     
-        // Delete a company
-        func deleteCompany(company: Company) {
-            // Remove the company from the companies array
-            if let index = companies.firstIndex(where: { $0.id == company.id }) {
-                companies.remove(at: index)
-                // Remove any product posts associated with the company
-                productPosts.removeAll(where: { $0.company_id == company.id })
-                print("Company deleted successfully!")
-            } else {
-                print("Unable to delete company. Invalid ID.")
-            }
-        }
+//        // Delete a company
+//        func deleteCompany(company: Company) {
+//            // Remove the company from the companies array
+//            if let index = companies.firstIndex(where: { $0.id == company.id }) {
+//                companies.remove(at: index)
+//                // Remove any product posts associated with the company
+//                productPosts.removeAll(where: { $0.company_id == company.id })
+//                print("Company deleted successfully!")
+//            } else {
+//                print("Unable to delete company. Invalid ID.")
+//            }
+//        }
         // View all companies
         func viewAllCompanies() -> [Company] {
             return companies

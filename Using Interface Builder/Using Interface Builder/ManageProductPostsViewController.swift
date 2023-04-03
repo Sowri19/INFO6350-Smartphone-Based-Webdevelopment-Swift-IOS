@@ -174,36 +174,58 @@ class ManageProductPostsViewController: UIViewController {
     }
     @IBAction func deleteProductPost(_ sender: UIButton) {
         print("Delete Product Post button pressed")
-        if let postIdText = ProductPostIdField?.text, let postDeleteId = Int(postIdText) {
-            let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-            let fetchRequest: NSFetchRequest<ProductPostData> = ProductPostData.fetchRequest()
-            fetchRequest.predicate = NSPredicate(format: "id == %d", postDeleteId)
-            do {
-                let results = try context.fetch(fetchRequest)
-                if let postToDelete = results.first {
-                    context.delete(postToDelete)
-                    try context.save()
-                    // Deletion was successful
-                    let alert = UIAlertController(title: "Product Post Deleted Successfully", message: "Press ok to continue", preferredStyle: .alert)
-                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                    present(alert, animated: true, completion: nil)
-                    return
-                } else {
-                    // Deletion failed
-                    let alert = UIAlertController(title: "Error", message: "Product Post ID does not exist to delete.", preferredStyle: .alert)
-                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                    present(alert, animated: true, completion: nil)
-                }
-            } catch {
-                // handle error
-                print("Error deleting product post: \(error)")
-                let alert = UIAlertController(title: "Error", message: "Unable to delete product post.", preferredStyle: .alert)
+        guard let idText = ProductPostIdField.text, let productPostId = Int(idText) else {
+            let alert = UIAlertController(title: "Error", message: "Please enter a valid Company ID", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            present(alert, animated: true, completion: nil)
+            return
+        }
+     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+        
+        // Check if any orders are associated with this product type
+        let orderFetchRequest: NSFetchRequest<OrdersData> = OrdersData.fetchRequest()
+        orderFetchRequest.predicate = NSPredicate(format: "post_id == %ld", productPostId)
+        
+        do {
+            let orders = try context.fetch(orderFetchRequest)
+            if !orders.isEmpty {
+                let alert = UIAlertController(title: "Error", message: "There are orders associated with this product post id. Please disassociate or delete them before deleting the product type.", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                present(alert, animated: true, completion: nil)
+                return
+            }
+        }
+        catch let error {
+            // Handle any errors that occur during fetch
+            let alert = UIAlertController(title: "Error", message: "Failed to fetch product posts associated with product post id with error: \(error.localizedDescription)", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            present(alert, animated: true, completion: nil)
+            return
+        }
+        
+        // Now delete the product Post
+        let fetchRequest: NSFetchRequest<ProductPostData> = ProductPostData.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %d", productPostId)
+        do {
+            let results = try context.fetch(fetchRequest)
+            if let postToDelete = results.first {
+                context.delete(postToDelete)
+                try context.save()
+                // Deletion was successful
+                let alert = UIAlertController(title: "Product Post Deleted Successfully", message: "Press ok to continue", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                present(alert, animated: true, completion: nil)
+                return
+            } else {
+                // Deletion failed
+                let alert = UIAlertController(title: "Error", message: "Product Post ID does not exist to delete.", preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                 present(alert, animated: true, completion: nil)
             }
-        } else {
-            // handle case where idField has no text or the text is not a valid integer
-            let alert = UIAlertController(title: "Error", message: "Please enter a valid Product Post ID", preferredStyle: .alert)
+        } catch {
+            // handle error
+            print("Error deleting product post: \(error)")
+            let alert = UIAlertController(title: "Error", message: "Unable to delete product post.", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
             present(alert, animated: true, completion: nil)
         }
