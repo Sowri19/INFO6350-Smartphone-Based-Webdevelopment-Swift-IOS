@@ -85,26 +85,42 @@ class ManageCompaniesViewController: UIViewController {
     }
     @IBAction func DeleteCompany(_ sender: UIButton) {
         print("Delete Company button pressed")
-            if let idText = CompanyIdField?.text, let companyId = Int(idText) {
-                let companyToDelete = Company(id: companyId, name: "", address: "", country: "", zip: "", company_type: "")
-                if productManager.deleteCompany(company: companyToDelete) {
-                    // Deletion was successful
-                    let alert = UIAlertController(title: "Company Deleted Successfully", message: "Press ok to continue", preferredStyle: .alert)
-                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                    present(alert, animated: true, completion: nil)
-                    return
-                } else {
-                    // Deletion failed
-                    let alert = UIAlertController(title: "Error", message: "Company ID does not exist to delete.", preferredStyle: .alert)
-                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                    present(alert, animated: true, completion: nil)
-                }
+        if let idText = CompanyIdField?.text, let companyId = Int(idText) {
+            let companyToDelete = Company(id: companyId, name: "", address: "", country: "", zip: "", company_type: "")
+            
+            //checking
+            let hasPost = productManager.productPosts.contains(where: { $0.company_id == companyId })
+            let hasProduct = productManager.products.contains(where: { $0.company_id == companyId })
+            if hasPost {
+                let alert = UIAlertController(title: "Error", message: "There are product posts associated with this company. Please disassociate or delete them before deleting the company.", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                present(alert, animated: true, completion: nil)
+                return
+            }else if hasProduct {
+                let alert = UIAlertController(title: "Error", message: "There are products associated with this company. Please disassociate or delete them before deleting the company.", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                present(alert, animated: true, completion: nil)
+                return
+            }
+            
+            if productManager.deleteCompany(company: companyToDelete) {
+                // Deletion was successful
+                let alert = UIAlertController(title: "Company Deleted Successfully", message: "Press ok to continue", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                present(alert, animated: true, completion: nil)
+                return
             } else {
-                // handle case where idField has no text or the text is not a valid integer
-                let alert = UIAlertController(title: "Error", message: "Please enter a valid Company ID", preferredStyle: .alert)
+                // Deletion failed
+                let alert = UIAlertController(title: "Error", message: "Company ID does not exist to delete.", preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                 present(alert, animated: true, completion: nil)
             }
+        } else {
+            // handle case where idField has no text or the text is not a valid integer
+            let alert = UIAlertController(title: "Error", message: "Please enter a valid Company ID", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            present(alert, animated: true, completion: nil)
+        }
     }
     @IBAction func UpdateCompany(_ sender: UIButton) {
         print("Update Company button pressed")

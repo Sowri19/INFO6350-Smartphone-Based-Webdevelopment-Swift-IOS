@@ -96,6 +96,23 @@ class ManageProductsViewController: UIViewController {
         print("Delete Product button pressed")
         if let idText = ProductIdField?.text, let productId = Int(idText) {
             let productToDelete = Product(id: productId, name: "", product_description: "", product_rating: 0, company_id: 0, quantity: 0)
+            // checking
+            
+            let hasOrder = productManager.orders.contains(where: { $0.product_id == productId })
+            let hasPost = productManager.productPosts.contains(where: { $0.product_id == productId })
+
+            if hasOrder {
+                let alert = UIAlertController(title: "Error", message: "There are orders associated with this product. Please disassociate or delete them before deleting the product.", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                present(alert, animated: true, completion: nil)
+                return
+            } else if hasPost {
+                let alert = UIAlertController(title: "Error", message: "There are product posts associated with this product. Please disassociate or delete them before deleting the product.", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                present(alert, animated: true, completion: nil)
+                return
+            }
+
             if productManager.deleteProduct(product: productToDelete) {
                 // Deletion was successful
                 let alert = UIAlertController(title: "Product Deleted Successfully", message: "Press ok to continue", preferredStyle: .alert)

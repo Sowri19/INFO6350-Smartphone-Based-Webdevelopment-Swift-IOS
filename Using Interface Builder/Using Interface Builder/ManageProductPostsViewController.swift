@@ -115,31 +115,39 @@ class ManageProductPostsViewController: UIViewController {
     }
     @IBAction func deleteProductPost(_ sender: UIButton) {
         print("Delete Product Post button pressed")
-        if let postIdText = ProductPostIdField?.text, let postDeleteId = Int(postIdText){
-            let productPostIDExists = productManager.productPosts.contains { $0.product_post_id == postDeleteId }
-            if productPostIDExists {
-                // Delete the product post from the productPosts array
-                if let productPostToDelete = productManager.productPosts.first(where: { $0.product_post_id == postDeleteId }) {
-                    productManager.deleteProductPost(productPost: productPostToDelete)
-                    print("Product post deleted successfully!")
-                    // Handle case where product post id is deleted
-                    let alert = UIAlertController(title: "Success", message: "Product Post deleted successfully", preferredStyle: .alert)
-                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                    present(alert, animated: true, completion: nil)
+            if let postIdText = ProductPostIdField?.text, let postDeleteId = Int(postIdText) {
+                let productPostIDExists = productManager.productPosts.contains { $0.product_post_id == postDeleteId }
+                if productPostIDExists {
+                    // Checking
+                    let ordersExist = productManager.orders.contains(where: { $0.post_id == postDeleteId })
+                    if ordersExist {
+                        let alert = UIAlertController(title: "Error", message: "There are orders associated with this product post. Please disassociate or delete them before deleting the product post.", preferredStyle: .alert)
+                        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                        present(alert, animated: true, completion: nil)
+                        return
+                    }
+
+                    // Delete the product post from the productPosts array
+                    if let productPostToDelete = productManager.productPosts.first(where: { $0.product_post_id == postDeleteId }) {
+                        productManager.deleteProductPost(productPost: productPostToDelete)
+                        print("Product post deleted successfully!")
+                        // Handle case where product post id is deleted
+                        let alert = UIAlertController(title: "Success", message: "Product Post deleted successfully", preferredStyle: .alert)
+                        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                        present(alert, animated: true, completion: nil)
+                        return
+                    }
                 }
-            } else {
                 // Handle case where product post id is not valid
                 let alert = UIAlertController(title: "Error", message: "Product Post ID does not exist to delete.", preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                 present(alert, animated: true, completion: nil)
+            } else {
+                let alert = UIAlertController(title: "Error", message: "Please enter an ID", preferredStyle: .alert)
+                let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+                alert.addAction(okAction)
+                present(alert, animated: true, completion: nil)
             }
-        } else {
-            let alert = UIAlertController(title: "Error", message: "Please enter an ID", preferredStyle: .alert)
-            let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
-            alert.addAction(okAction)
-            present(alert, animated: true, completion: nil)
-        }
-
     }
     @IBAction func updateProductPost(_ sender: UIButton) {
         print("Update Product Post button pressed")

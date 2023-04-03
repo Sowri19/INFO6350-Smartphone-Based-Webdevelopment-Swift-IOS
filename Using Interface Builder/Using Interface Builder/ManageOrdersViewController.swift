@@ -96,7 +96,6 @@ class ManageOrdersViewController: UIViewController {
     }
     @IBAction func deleteOrder(_ sender: UIButton) {
         print("Delete Order button pressed")
-           
            if let orderIdText = OrderidField?.text, let orderId = Int(orderIdText) {
                let orderIndex = productManager.orders.firstIndex(where: { $0.order_id == orderId })
                if let index = orderIndex {

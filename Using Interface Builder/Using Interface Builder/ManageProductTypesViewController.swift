@@ -81,26 +81,43 @@ class ManageProductTypesViewController: UIViewController {
     
     @IBAction func DeleteProductType(_ sender: UIButton) {
         print("Delete Product Type button pressed")
-        if let idText = ProductTypeIdField?.text, let productTypeId = Int(idText) {
-            let productTypeToDelete = Product_type(id: productTypeId, product_type: "")
-            if productManager.deleteProductType(productType: productTypeToDelete) {
-                // Deletion was successful
-                let alert = UIAlertController(title: "Product Type Deleted Successfully", message: "Press ok to continue", preferredStyle: .alert)
+            guard let idText = ProductTypeIdField?.text, let productTypeId = Int(idText) else {
+                // Handle case where idField has no text or the text is not a valid integer
+                let alert = UIAlertController(title: "Error", message: "Please enter a valid Product Type ID", preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                 present(alert, animated: true, completion: nil)
                 return
+            }
+            
+        let productType = productManager.productTypes.first(where: { $0.id == productTypeId })?.product_type
+        let ordersExist = productManager.orders.contains(where: { $0.product_type == productType })
+        let productPostsExist = productManager.productPosts.contains(where: { $0.product_id == productTypeId })
+
+        if ordersExist {
+            let alert = UIAlertController(title: "Error", message: "There are orders associated with this product type. Please disassociate or delete them before deleting the product type.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            present(alert, animated: true, completion: nil)
+            return
+        } else if productPostsExist {
+            let alert = UIAlertController(title: "Error", message: "There are product posts associated with this product type. Please disassociate or delete them before deleting the product type.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            present(alert, animated: true, completion: nil)
+            return
+        }
+
+            // Delete the product type
+            let productTypeToDelete = Product_type(id: productTypeId, product_type: "")
+            if productManager.deleteProductType(productType: productTypeToDelete) {
+                // Deletion was successful
+                let alert = UIAlertController(title: "Product Type Deleted Successfully", message: "Press OK to continue", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                present(alert, animated: true, completion: nil)
             } else {
                 // Deletion failed
                 let alert = UIAlertController(title: "Error", message: "Product Type ID does not exist to delete.", preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                 present(alert, animated: true, completion: nil)
             }
-        } else {
-            // handle case where idField has no text or the text is not a valid integer
-            let alert = UIAlertController(title: "Error", message: "Please enter a valid Product Type ID", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-            present(alert, animated: true, completion: nil)
-        }
     }
     
     @IBAction func UpdateProductType(_ sender: UIButton) {
