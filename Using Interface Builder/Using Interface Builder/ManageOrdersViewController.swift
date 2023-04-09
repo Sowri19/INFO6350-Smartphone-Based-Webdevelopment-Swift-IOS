@@ -102,6 +102,7 @@ class ManageOrdersViewController: UIViewController {
                 let alert = UIAlertController(title: "Error", message: "Product type not found.", preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                 present(alert, animated: true, completion: nil)
+                return
             }
         } catch {
             let alert = UIAlertController(title: "Error", message: "Failed to fetch product type.", preferredStyle: .alert)
